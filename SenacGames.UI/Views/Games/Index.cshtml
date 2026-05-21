@@ -41,8 +41,8 @@
                             else
                             {
                                 <div class="card-img-top d-flex align-items-center justify-content-center"
-                                     style="background: linear-gradient(135deg, #004c97, #0066cc);">
-                                    <i class="bi bi-controller text-white" style="font-size: 3rem;"></i>
+                                     style="background: var(--surface-container-high);">
+                                    <i class="bi bi-controller" style="font-size: 3rem; color: var(--on-surface-variant);"></i>
                                 </div>
                             }
                             <div class="card-body">
@@ -50,8 +50,8 @@
                                     <span class="badge-category">@game.CategoryName</span>
                                     @if (game.IsFeatured)
                                     {
-                                        <span class="badge-featured">
-                                            <i class="bi bi-star-fill"></i> DESTAQUE
+                                        <span class="badge badge-featured">
+                                            <i class="bi bi-stars"></i> DESTAQUE
                                         </span>
                                     }
                                 </div>
@@ -60,12 +60,9 @@
                                     @(game.Description.Length > 100 ? game.Description.Substring(0, 100) + "..." : game.Description)
                                 </p>
                             </div>
-                            <div class="card-footer">
+                            <div class="card-footer" style="display:none;">
                                 <span class="release-year">
                                     <i class="bi bi-calendar3"></i> @game.ReleaseYear
-                                </span>
-                                <span class="text-primary fw-semibold" style="font-size: 0.85rem;">
-                                    Ver mais <i class="bi bi-arrow-right"></i>
                                 </span>
                             </div>
                         </div>

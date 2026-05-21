@@ -5,6 +5,15 @@
 }
 
 @* Cards de métricas *@
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h3 class="fw-bold mb-0 text-uppercase" style="color: var(--on-surface);">Visão Geral</h3>
+    </div>
+    <div class="d-none d-md-block opacity-25">
+        <img src="~/images/logo.png" alt="SenacGames" class="brand-logo" style="height: 50px; filter: grayscale(100%);" />
+    </div>
+</div>
+
 <div class="row g-4 mb-4">
     <div class="col-lg-4">
         <div class="stat-card">
@@ -62,7 +71,7 @@
                     <td>
                         @if (game.IsFeatured)
                         {
-                            <span class="badge bg-warning text-dark"><i class="bi bi-star-fill"></i> Sim</span>
+                            <span class="badge badge-featured"><i class="bi bi-stars"></i> Sim</span>
                         }
                         else
                         {

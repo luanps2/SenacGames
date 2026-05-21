@@ -16,8 +16,8 @@
                     }
                     else
                     {
-                        <div class="d-flex align-items-center justify-content-center" style="height: 350px; background: rgba(255,255,255,0.1);">
-                            <i class="bi bi-controller text-white" style="font-size: 5rem;"></i>
+                        <div class="d-flex align-items-center justify-content-center" style="height: 350px; background: var(--surface-container-high);">
+                            <i class="bi bi-controller" style="font-size: 5rem; color: var(--on-surface-variant);"></i>
                         </div>
                     }
                 </div>
@@ -29,7 +29,7 @@
                         <span><i class="bi bi-calendar3"></i> @Model.Game.ReleaseYear</span>
                         @if (Model.Game.IsFeatured)
                         {
-                            <span style="background: rgba(253,191,63,0.3);">
+                            <span class="highlight">
                                 <i class="bi bi-star-fill"></i> Destaque
                             </span>
                         }
@@ -69,15 +69,15 @@
                                 else
                                 {
                                     <div class="card-img-top d-flex align-items-center justify-content-center"
-                                         style="background: linear-gradient(135deg, #004c97, #0066cc);">
-                                        <i class="bi bi-controller text-white" style="font-size: 3rem;"></i>
+                                         style="background: var(--surface-container-high);">
+                                        <i class="bi bi-controller" style="font-size: 3rem; color: var(--on-surface-variant);"></i>
                                     </div>
                                 }
                                 <div class="card-body">
                                     <span class="badge-category">@game.CategoryName</span>
                                     <h5 class="card-title mt-2">@game.Title</h5>
                                 </div>
-                                <div class="card-footer">
+                                <div class="card-footer" style="display:none;">
                                     <span class="release-year">@game.ReleaseYear</span>
                                 </div>
                             </div>
