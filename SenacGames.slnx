@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="SenacGames.API/SenacGames.API.csproj" />
+  <Project Path="SenacGames.Application/SenacGames.Application.csproj" />
+  <Project Path="SenacGames.Domain/SenacGames.Domain.csproj" />
+  <Project Path="SenacGames.Infrastructure/SenacGames.Infrastructure.csproj" />
+  <Project Path="SenacGames.UI/SenacGames.UI.csproj" />
+</Solution>

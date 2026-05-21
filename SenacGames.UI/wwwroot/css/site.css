@@ -1,0 +1,760 @@
+/* =============================================================================
+   SenacGames — Design System CSS
+   =============================================================================
+   Baseado no protótipo Stitch "Academic Play"
+   Cores: Senac Blue (#004c97), Gold (#fdbf3f), Background (#f8f9fa)
+   Fonte: Inter (Google Fonts)
+   ============================================================================= */
+
+/* ===================== GOOGLE FONTS ===================== */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* ===================== VARIÁVEIS CSS (Design Tokens) ===================== */
+:root {
+    /* Cores Primárias */
+    --primary: #004c97;
+    --primary-dark: #00366e;
+    --primary-light: #d6e3ff;
+    --primary-container: #004c97;
+    --on-primary: #ffffff;
+
+    /* Cores Secundárias (Gold/Accent) */
+    --secondary: #fdbf3f;
+    --secondary-dark: #7c5800;
+    --on-secondary: #ffffff;
+
+    /* Cores de Superfície */
+    --background: #f8f9fa;
+    --surface: #ffffff;
+    --surface-container: #edeeef;
+    --surface-container-high: #e7e8e9;
+    --on-surface: #191c1d;
+    --on-surface-variant: #424751;
+
+    /* Cores Utilitárias */
+    --outline: #737782;
+    --outline-variant: #c2c6d3;
+    --error: #ba1a1a;
+    --success: #198754;
+    --warning: #ffc107;
+    --info: #0dcaf0;
+
+    /* Tipografia */
+    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+    /* Elevação (sombras) */
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+    --shadow-hover: 0 8px 24px rgba(0, 76, 151, 0.15);
+
+    /* Bordas */
+    --radius-sm: 0.25rem;
+    --radius-md: 0.5rem;
+    --radius-lg: 0.75rem;
+    --radius-xl: 1rem;
+
+    /* Sidebar */
+    --sidebar-width: 260px;
+}
+
+/* ===================== RESET E BASE ===================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-family);
+    background-color: var(--background);
+    color: var(--on-surface);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ===================== NAVBAR PÚBLICA ===================== */
+.navbar-senac {
+    background-color: var(--primary) !important;
+    box-shadow: var(--shadow-md);
+    padding: 0.75rem 0;
+}
+
+.navbar-senac .navbar-brand {
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: var(--on-primary) !important;
+    letter-spacing: -0.5px;
+}
+
+.navbar-senac .navbar-brand i {
+    color: var(--secondary);
+    margin-right: 0.5rem;
+}
+
+.navbar-senac .nav-link {
+    color: rgba(255, 255, 255, 0.85) !important;
+    font-weight: 500;
+    font-size: 0.925rem;
+    padding: 0.5rem 1rem !important;
+    border-radius: var(--radius-sm);
+    transition: all 0.2s ease;
+}
+
+.navbar-senac .nav-link:hover,
+.navbar-senac .nav-link.active {
+    color: var(--on-primary) !important;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.navbar-senac .btn-outline-light {
+    border-color: rgba(255, 255, 255, 0.5);
+    font-weight: 500;
+    font-size: 0.875rem;
+    padding: 0.4rem 1.25rem;
+}
+
+.navbar-senac .btn-outline-light:hover {
+    background-color: var(--on-primary);
+    color: var(--primary) !important;
+}
+
+.navbar-senac .btn-warning {
+    background-color: var(--secondary);
+    border-color: var(--secondary);
+    color: #1a1a1a !important;
+    font-weight: 600;
+    font-size: 0.875rem;
+    padding: 0.4rem 1.25rem;
+}
+
+/* ===================== HERO SECTION ===================== */
+.hero-section {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+    padding: 4rem 0;
+    color: var(--on-primary);
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-section::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(135deg, transparent 0%, rgba(253, 191, 63, 0.1) 100%);
+    pointer-events: none;
+}
+
+.hero-section h1 {
+    font-size: 2.75rem;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+}
+
+.hero-section p {
+    font-size: 1.125rem;
+    opacity: 0.9;
+    max-width: 600px;
+    margin-bottom: 1.5rem;
+}
+
+.hero-section .btn-accent {
+    background-color: var(--secondary);
+    color: #1a1a1a;
+    font-weight: 600;
+    padding: 0.75rem 2rem;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.hero-section .btn-accent:hover {
+    background-color: #e6aa2e;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(253, 191, 63, 0.4);
+}
+
+/* ===================== CARDS DE GAMES ===================== */
+.game-card {
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease;
+    border: 1px solid var(--outline-variant);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.game-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-hover);
+    border-color: var(--primary-light);
+}
+
+.game-card .card-img-top {
+    height: 200px;
+    object-fit: cover;
+    background-color: var(--surface-container);
+}
+
+.game-card .card-body {
+    padding: 1.25rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.game-card .card-title {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--on-surface);
+    margin-bottom: 0.5rem;
+}
+
+.game-card .card-text {
+    color: var(--on-surface-variant);
+    font-size: 0.875rem;
+    flex: 1;
+}
+
+.game-card .badge-category {
+    background-color: var(--primary-light);
+    color: var(--primary-dark);
+    font-weight: 600;
+    font-size: 0.7rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: 50px;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+}
+
+.game-card .badge-featured {
+    background-color: var(--secondary);
+    color: #1a1a1a;
+    font-weight: 700;
+    font-size: 0.65rem;
+    padding: 0.3rem 0.6rem;
+    border-radius: 50px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.game-card .card-footer {
+    background: transparent;
+    border-top: 1px solid var(--outline-variant);
+    padding: 0.75rem 1.25rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.game-card .release-year {
+    color: var(--outline);
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+/* ===================== SEÇÃO DE CATEGORIAS ===================== */
+.category-card {
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    padding: 2rem 1.5rem;
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--outline-variant);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.category-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-hover);
+    border-color: var(--primary);
+}
+
+.category-card i {
+    font-size: 2rem;
+    color: var(--primary);
+    margin-bottom: 0.75rem;
+}
+
+.category-card h5 {
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--on-surface);
+    margin: 0;
+}
+
+/* ===================== SECTION HEADERS ===================== */
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.section-header h2 {
+    font-weight: 700;
+    font-size: 1.75rem;
+    color: var(--on-surface);
+}
+
+.section-header .btn-link {
+    color: var(--primary);
+    font-weight: 600;
+    text-decoration: none;
+    font-size: 0.925rem;
+}
+
+.section-header .btn-link:hover {
+    text-decoration: underline;
+}
+
+/* ===================== ADMIN SIDEBAR ===================== */
+.admin-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: var(--sidebar-width);
+    height: 100vh;
+    background: var(--primary-dark);
+    color: var(--on-primary);
+    padding: 0;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.admin-sidebar .sidebar-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.admin-sidebar .sidebar-header h4 {
+    font-weight: 700;
+    font-size: 1.25rem;
+    margin: 0;
+}
+
+.admin-sidebar .sidebar-header small {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.75rem;
+}
+
+.admin-sidebar .nav-link {
+    color: rgba(255, 255, 255, 0.7) !important;
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+    font-size: 0.925rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    transition: all 0.2s ease;
+    border-left: 3px solid transparent;
+}
+
+.admin-sidebar .nav-link:hover {
+    color: var(--on-primary) !important;
+    background-color: rgba(255, 255, 255, 0.08);
+    border-left-color: var(--secondary);
+}
+
+.admin-sidebar .nav-link.active {
+    color: var(--on-primary) !important;
+    background-color: rgba(255, 255, 255, 0.12);
+    border-left-color: var(--secondary);
+}
+
+.admin-sidebar .nav-link i {
+    font-size: 1.2rem;
+    width: 24px;
+    text-align: center;
+}
+
+.admin-sidebar .sidebar-footer {
+    margin-top: auto;
+    padding: 1rem 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* ===================== ADMIN CONTENT ===================== */
+.admin-content {
+    margin-left: var(--sidebar-width);
+    padding: 2rem;
+    min-height: 100vh;
+}
+
+.admin-content .page-header {
+    margin-bottom: 2rem;
+}
+
+.admin-content .page-header h1 {
+    font-weight: 700;
+    font-size: 1.75rem;
+    color: var(--on-surface);
+}
+
+.admin-content .page-header p {
+    color: var(--on-surface-variant);
+    font-size: 0.925rem;
+}
+
+/* ===================== DASHBOARD CARDS ===================== */
+.stat-card {
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--outline-variant);
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.stat-card .stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.stat-card .stat-icon.primary {
+    background-color: var(--primary-light);
+    color: var(--primary);
+}
+
+.stat-card .stat-icon.secondary {
+    background-color: #fff3cd;
+    color: var(--secondary-dark);
+}
+
+.stat-card .stat-icon.success {
+    background-color: #d1e7dd;
+    color: var(--success);
+}
+
+.stat-card .stat-number {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--on-surface);
+    line-height: 1;
+    margin-top: 1rem;
+}
+
+.stat-card .stat-label {
+    color: var(--on-surface-variant);
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin-top: 0.25rem;
+}
+
+/* ===================== TABELAS ADMIN ===================== */
+.table-senac {
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--outline-variant);
+}
+
+.table-senac thead {
+    background-color: var(--surface-container);
+}
+
+.table-senac thead th {
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--on-surface-variant);
+    padding: 1rem 1.25rem;
+    border-bottom: 2px solid var(--outline-variant);
+}
+
+.table-senac tbody td {
+    padding: 1rem 1.25rem;
+    vertical-align: middle;
+    font-size: 0.925rem;
+    border-bottom: 1px solid var(--outline-variant);
+}
+
+.table-senac tbody tr:hover {
+    background-color: var(--surface-container);
+}
+
+/* ===================== FORMULÁRIOS ===================== */
+.form-senac {
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--outline-variant);
+}
+
+.form-senac .form-label {
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--on-surface);
+    margin-bottom: 0.5rem;
+}
+
+.form-senac .form-control,
+.form-senac .form-select {
+    border: 1px solid var(--outline-variant);
+    border-radius: var(--radius-sm);
+    padding: 0.625rem 0.875rem;
+    font-size: 0.925rem;
+    transition: all 0.2s ease;
+}
+
+.form-senac .form-control:focus,
+.form-senac .form-select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(0, 76, 151, 0.15);
+}
+
+.form-senac .form-check-input:checked {
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+
+/* ===================== BOTÕES ===================== */
+.btn-primary-senac {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    color: var(--on-primary);
+    font-weight: 600;
+    padding: 0.5rem 1.5rem;
+    border-radius: var(--radius-sm);
+    transition: all 0.2s ease;
+}
+
+.btn-primary-senac:hover {
+    background-color: var(--primary-dark);
+    border-color: var(--primary-dark);
+    color: var(--on-primary);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+.btn-outline-senac {
+    border: 2px solid var(--primary);
+    color: var(--primary);
+    font-weight: 600;
+    padding: 0.5rem 1.5rem;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    transition: all 0.2s ease;
+}
+
+.btn-outline-senac:hover {
+    background-color: var(--primary);
+    color: var(--on-primary);
+}
+
+/* ===================== LOGIN / REGISTER ===================== */
+.auth-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 50%, #0066cc 100%);
+    padding: 2rem;
+}
+
+.auth-card {
+    background: var(--surface);
+    border-radius: var(--radius-xl);
+    padding: 3rem;
+    width: 100%;
+    max-width: 440px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+.auth-card .auth-logo {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.auth-card .auth-logo h2 {
+    font-weight: 700;
+    color: var(--primary);
+    font-size: 1.75rem;
+}
+
+.auth-card .auth-logo p {
+    color: var(--on-surface-variant);
+    font-size: 0.925rem;
+}
+
+.auth-card .auth-logo i {
+    color: var(--primary);
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+/* ===================== DETALHES DO GAME ===================== */
+.game-detail-header {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+    padding: 3rem 0;
+    color: var(--on-primary);
+}
+
+.game-detail-cover {
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+    max-height: 400px;
+}
+
+.game-detail-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.game-detail-info h1 {
+    font-weight: 700;
+    font-size: 2.25rem;
+    margin-bottom: 0.5rem;
+}
+
+.game-detail-info .game-meta {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.game-detail-info .game-meta span {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 0.35rem 0.85rem;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+/* ===================== FOOTER ===================== */
+.footer-senac {
+    background-color: var(--primary-dark);
+    color: rgba(255, 255, 255, 0.7);
+    padding: 2rem 0;
+    margin-top: 4rem;
+}
+
+.footer-senac a {
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.footer-senac a:hover {
+    color: var(--on-primary);
+}
+
+/* ===================== FILTRO DE CATEGORIAS ===================== */
+.category-filter {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+}
+
+.category-filter .btn {
+    border-radius: 50px;
+    padding: 0.4rem 1.25rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    border: 1px solid var(--outline-variant);
+    background: var(--surface);
+    color: var(--on-surface-variant);
+    transition: all 0.2s ease;
+}
+
+.category-filter .btn:hover,
+.category-filter .btn.active {
+    background-color: var(--primary);
+    color: var(--on-primary);
+    border-color: var(--primary);
+}
+
+/* ===================== ANIMAÇÕES ===================== */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-in {
+    animation: fadeInUp 0.5s ease forwards;
+}
+
+/* ===================== RESPONSIVO ===================== */
+@media (max-width: 768px) {
+    .hero-section h1 {
+        font-size: 2rem;
+    }
+
+    .admin-sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+    }
+
+    .admin-content {
+        margin-left: 0;
+    }
+
+    .stat-card .stat-number {
+        font-size: 1.5rem;
+    }
+
+    .auth-card {
+        padding: 2rem;
+    }
+}
+
+/* ===================== UTILITÁRIOS ===================== */
+.text-primary-senac {
+    color: var(--primary) !important;
+}
+
+.bg-primary-senac {
+    background-color: var(--primary) !important;
+}
+
+.text-muted-senac {
+    color: var(--on-surface-variant) !important;
+}
+
+.gap-3 {
+    gap: 1rem;
+}
+
+.section-padding {
+    padding: 4rem 0;
+}
+
+a.text-decoration-none:hover {
+    text-decoration: none !important;
+}
