@@ -1,7 +1,7 @@
 // =============================================================================
 // SenacGames.Infrastructure - GameRepository
 // =============================================================================
-// 📌 CONCEITO: Repositório (Repository Pattern)
+//  CONCEITO: Repositório (Repository Pattern)
 // O repositório encapsula toda a lógica de acesso a dados.
 // Ele usa o DbContext do Entity Framework para executar as operações.
 //
@@ -32,7 +32,7 @@ namespace SenacGames.Infrastructure.Repositories
 
         /// <summary>
         /// Retorna todos os games incluindo a categoria relacionada.
-        /// 📌 CONCEITO: Include() — carrega dados de tabelas relacionadas (JOIN).
+        ///  CONCEITO: Include() — carrega dados de tabelas relacionadas (JOIN).
         /// </summary>
         public async Task<IEnumerable<Game>> GetAllAsync()
         {
@@ -54,7 +54,7 @@ namespace SenacGames.Infrastructure.Repositories
 
         /// <summary>
         /// Retorna apenas os games marcados como destaque.
-        /// 📌 CONCEITO: Where() — filtra registros (equivalente ao WHERE do SQL).
+        ///  CONCEITO: Where() — filtra registros (equivalente ao WHERE do SQL).
         /// </summary>
         public async Task<IEnumerable<Game>> GetFeaturedAsync()
         {
@@ -77,7 +77,7 @@ namespace SenacGames.Infrastructure.Repositories
 
         /// <summary>
         /// Adiciona um novo game ao banco de dados.
-        /// 📌 CONCEITO: AddAsync() + SaveChangesAsync()
+        ///  CONCEITO: AddAsync() + SaveChangesAsync()
         /// AddAsync() marca a entidade para inserção.
         /// SaveChangesAsync() executa o INSERT no banco de dados.
         /// </summary>
@@ -89,7 +89,7 @@ namespace SenacGames.Infrastructure.Repositories
 
         /// <summary>
         /// Atualiza um game existente.
-        /// 📌 CONCEITO: Update() marca a entidade como modificada.
+        ///  CONCEITO: Update() marca a entidade como modificada.
         /// SaveChangesAsync() executa o UPDATE no banco.
         /// </summary>
         public async Task UpdateAsync(Game game)
@@ -113,7 +113,7 @@ namespace SenacGames.Infrastructure.Repositories
 
         /// <summary>
         /// Retorna o total de games cadastrados.
-        /// 📌 CONCEITO: CountAsync() — executa COUNT(*) no banco.
+        ///  CONCEITO: CountAsync() — executa COUNT(*) no banco.
         /// </summary>
         public async Task<int> CountAsync()
         {

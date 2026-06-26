@@ -1,7 +1,7 @@
 // =============================================================================
 // SenacGames.Domain - Interface IGameRepository
 // =============================================================================
-// 📌 CONCEITO IMPORTANTE:
+//  CONCEITO IMPORTANTE:
 // Uma INTERFACE define um CONTRATO - ela diz O QUE deve ser feito,
 // mas NÃO diz COMO fazer. A implementação fica em outra camada.
 //

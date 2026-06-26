@@ -1,7 +1,7 @@
 // =============================================================================
 // SenacGames.Infrastructure - DbContext
 // =============================================================================
-// 📌 CONCEITO IMPORTANTE: DbContext (Entity Framework Core)
+//  CONCEITO IMPORTANTE: DbContext (Entity Framework Core)
 // O DbContext é a classe PRINCIPAL do Entity Framework Core.
 // Ele representa uma "sessão" com o banco de dados e permite:
 // - Consultar dados (SELECT)
@@ -27,7 +27,7 @@ namespace SenacGames.Infrastructure.Context
     public class SenacGamesDbContext : IdentityDbContext
     {
         // =====================================================================
-        // 📌 CONCEITO: Construtor com DbContextOptions
+        //  CONCEITO: Construtor com DbContextOptions
         // O ASP.NET Core injeta as opções de configuração (connection string,
         // provider, etc.) automaticamente via Dependency Injection.
         // =====================================================================
@@ -39,7 +39,7 @@ namespace SenacGames.Infrastructure.Context
         // =====================================================================
         // DbSets — Representam as tabelas no banco de dados
         // =====================================================================
-        // 📌 CONCEITO: DbSet<T>
+        //  CONCEITO: DbSet<T>
         // Cada DbSet<T> representa uma tabela no banco de dados.
         // O Entity Framework cria automaticamente as tabelas correspondentes.
         // =====================================================================
@@ -55,7 +55,7 @@ namespace SenacGames.Infrastructure.Context
         public DbSet<Category> Categories { get; set; }
 
         // =====================================================================
-        // 📌 CONCEITO: OnModelCreating (Fluent API)
+        //  CONCEITO: OnModelCreating (Fluent API)
         // Este método permite configurar o modelo do banco de dados usando
         // a Fluent API do Entity Framework Core.
         // Aqui aplicamos as configurações definidas em classes separadas.

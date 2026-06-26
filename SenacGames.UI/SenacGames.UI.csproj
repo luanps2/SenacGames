@@ -2,7 +2,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SenacGames.Application\SenacGames.Application.csproj" />
-    <ProjectReference Include="..\SenacGames.Infrastructure\SenacGames.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>

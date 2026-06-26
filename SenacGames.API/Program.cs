@@ -1,7 +1,7 @@
 // =============================================================================
 // SenacGames.API - Program.cs
 // =============================================================================
-// 📌 CONCEITO IMPORTANTE: Program.cs
+//  CONCEITO IMPORTANTE: Program.cs
 // Este é o PONTO DE ENTRADA da aplicação API.
 // Aqui configuramos todos os serviços (DI), middlewares e a pipeline HTTP.
 //
@@ -27,7 +27,7 @@ var builder = WebApplication.CreateBuilder(args);
 // =====================================================================
 // 1. ENTITY FRAMEWORK CORE — Configuração do banco de dados
 // =====================================================================
-// 📌 CONCEITO: AddDbContext registra o DbContext no container de DI.
+//  CONCEITO: AddDbContext registra o DbContext no container de DI.
 // UseSqlServer configura o Entity Framework para usar o SQL Server.
 // A connection string é lida do arquivo appsettings.json.
 // =====================================================================
@@ -37,7 +37,7 @@ builder.Services.AddDbContext<SenacGamesDbContext>(options =>
 // =====================================================================
 // 2. ASP.NET CORE IDENTITY — Autenticação e Autorização
 // =====================================================================
-// 📌 CONCEITO: Identity é o sistema de autenticação do ASP.NET Core.
+//  CONCEITO: Identity é o sistema de autenticação do ASP.NET Core.
 // Ele gerencia: usuários, senhas, roles, claims, login, logout, etc.
 // AddIdentity registra os serviços do Identity no container de DI.
 // AddEntityFrameworkStores conecta o Identity ao banco via EF Core.
@@ -72,7 +72,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 // =====================================================================
 // 3. DEPENDENCY INJECTION — Registro de Repositórios e Serviços
 // =====================================================================
-// 📌 CONCEITO: Dependency Injection (DI)
+//  CONCEITO: Dependency Injection (DI)
 // AddScoped registra um serviço com ciclo de vida "por requisição".
 // Isso significa que uma nova instância é criada para cada requisição HTTP.
 //
@@ -92,7 +92,7 @@ builder.Services.AddControllers();
 // =====================================================================
 // 5. SWAGGER — Documentação automática da API
 // =====================================================================
-// 📌 CONCEITO: Swagger gera automaticamente uma interface visual
+//  CONCEITO: Swagger gera automaticamente uma interface visual
 // para testar os endpoints da API no navegador.
 // Acesse: https://localhost:PORTA/swagger
 // =====================================================================
@@ -125,7 +125,7 @@ var app = builder.Build();
 // =====================================================================
 // PIPELINE DE MIDDLEWARES
 // =====================================================================
-// 📌 CONCEITO: Middlewares são executados em sequência para cada requisição.
+//  CONCEITO: Middlewares são executados em sequência para cada requisição.
 // A ordem importa! Cada middleware processa a requisição e passa adiante.
 // =====================================================================
 
@@ -139,7 +139,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseCors("AllowAll");
 
-// 📌 IMPORTANTE: UseAuthentication ANTES de UseAuthorization
+//  IMPORTANTE: UseAuthentication ANTES de UseAuthorization
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -148,7 +148,7 @@ app.MapControllers();
 // =====================================================================
 // SEED DATA — Popula o banco com dados iniciais
 // =====================================================================
-// 📌 CONCEITO: O seed é executado na inicialização da aplicação.
+//  CONCEITO: O seed é executado na inicialização da aplicação.
 // Ele cria categorias, games de exemplo e o usuário admin.
 // =====================================================================
 await SeedData.SeedAsync(app.Services);

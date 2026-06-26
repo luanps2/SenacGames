@@ -1,7 +1,7 @@
 // =============================================================================
 // SenacGames.API - GamesController
 // =============================================================================
-// 📌 CONCEITO IMPORTANTE: API Controller
+//  CONCEITO IMPORTANTE: API Controller
 // Um API Controller é responsável por receber requisições HTTP
 // e retornar respostas em formato JSON.
 //
@@ -10,11 +10,11 @@
 // - MVC Controller: retorna VIEWS (HTML) — Controller normal
 //
 // Endpoints REST deste controller:
-// GET    /api/games       → Lista todos os games
-// GET    /api/games/{id}  → Busca um game pelo Id
-// POST   /api/games       → Cria um novo game
-// PUT    /api/games/{id}  → Atualiza um game existente
-// DELETE /api/games/{id}  → Remove um game
+// GET    /api/games        Lista todos os games
+// GET    /api/games/{id}   Busca um game pelo Id
+// POST   /api/games        Cria um novo game
+// PUT    /api/games/{id}   Atualiza um game existente
+// DELETE /api/games/{id}   Remove um game
 // =============================================================================
 
 using Microsoft.AspNetCore.Authorization;
@@ -33,7 +33,7 @@ namespace SenacGames.API.Controllers
     {
         private readonly IGameService _gameService;
 
-        // 📌 CONCEITO: O serviço é injetado automaticamente pelo .NET (DI)
+        //  CONCEITO: O serviço é injetado automaticamente pelo .NET (DI)
         public GamesController(IGameService gameService)
         {
             _gameService = gameService;

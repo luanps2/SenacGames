@@ -1,7 +1,7 @@
 // =============================================================================
 // SenacGames.API - AuthController
 // =============================================================================
-// 📌 CONCEITO IMPORTANTE: Autenticação na API
+//  CONCEITO IMPORTANTE: Autenticação na API
 // Este controller demonstra como implementar autenticação usando
 // ASP.NET Core Identity compartilhado com a aplicação MVC.
 //
@@ -9,10 +9,10 @@
 // Em projetos reais de API, seria comum usar JWT (JSON Web Tokens).
 //
 // Endpoints:
-// POST /api/auth/register → Registra um novo usuário
-// POST /api/auth/login    → Faz login (cria cookie de autenticação)
-// POST /api/auth/logout   → Faz logout (remove cookie)
-// GET  /api/auth/me       → Retorna dados do usuário autenticado
+// POST /api/auth/register  Registra um novo usuário
+// POST /api/auth/login     Faz login (cria cookie de autenticação)
+// POST /api/auth/logout    Faz logout (remove cookie)
+// GET  /api/auth/me        Retorna dados do usuário autenticado
 // =============================================================================
 
 using Microsoft.AspNetCore.Authorization;
@@ -26,7 +26,7 @@ namespace SenacGames.API.Controllers
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
-        // 📌 CONCEITO: UserManager e SignInManager são serviços do Identity
+        //  CONCEITO: UserManager e SignInManager são serviços do Identity
         // UserManager: gerencia operações com usuários (criar, buscar, etc.)
         // SignInManager: gerencia operações de login/logout
         private readonly UserManager<IdentityUser> _userManager;

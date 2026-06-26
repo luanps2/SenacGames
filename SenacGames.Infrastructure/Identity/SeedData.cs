@@ -1,7 +1,7 @@
 // =============================================================================
 // SenacGames.Infrastructure - Seed Data (Dados Iniciais)
 // =============================================================================
-// 📌 CONCEITO IMPORTANTE: Seed Data
+//  CONCEITO IMPORTANTE: Seed Data
 // Seed Data são dados iniciais que são inseridos no banco de dados
 // quando a aplicação é executada pela primeira vez.
 // Isso é útil para:
@@ -165,7 +165,7 @@ namespace SenacGames.Infrastructure.Identity
             // =====================================================================
             // 3. SEED DE ROLES (Papéis de Usuário)
             // =====================================================================
-            // 📌 CONCEITO: Roles no Identity
+            //  CONCEITO: Roles no Identity
             // Roles são papéis que definem o nível de acesso do usuário.
             // Exemplo: "Admin" pode gerenciar games, "User" só pode visualizar.
             // =====================================================================
@@ -177,7 +177,7 @@ namespace SenacGames.Infrastructure.Identity
             // =====================================================================
             // 4. SEED DO USUÁRIO ADMINISTRADOR
             // =====================================================================
-            // 📌 CONCEITO: UserManager
+            //  CONCEITO: UserManager
             // O UserManager é o serviço do Identity para gerenciar usuários.
             // Ele permite criar, buscar, atualizar e deletar usuários.
             // =====================================================================

@@ -1,7 +1,7 @@
 // =============================================================================
 // SenacGames.Infrastructure - Configuração da entidade Game (Fluent API)
 // =============================================================================
-// 📌 CONCEITO: IEntityTypeConfiguration<T>
+//  CONCEITO: IEntityTypeConfiguration<T>
 // Esta classe define as regras de mapeamento da entidade Game para o banco.
 // Usando Fluent API, podemos definir:
 // - Tamanho máximo de campos (MaxLength)
@@ -38,10 +38,10 @@ namespace SenacGames.Infrastructure.Configurations
                 .HasMaxLength(500);
 
             // =====================================================================
-            // 📌 CONCEITO: Configuração de Relacionamento (Fluent API)
+            //  CONCEITO: Configuração de Relacionamento (Fluent API)
             // Um Game pertence a UMA Category (relação N:1).
             // Uma Category possui MUITOS Games (relação 1:N).
-            // HasOne → WithMany → HasForeignKey
+            // HasOne  WithMany  HasForeignKey
             // =====================================================================
             builder.HasOne(g => g.Category)       // Um Game tem UMA Category
                 .WithMany(c => c.Games)            // Uma Category tem MUITOS Games

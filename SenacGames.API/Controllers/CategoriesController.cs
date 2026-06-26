@@ -4,10 +4,10 @@
 // Controller REST para operações com Categorias.
 //
 // Endpoints:
-// GET    /api/categories       → Lista todas as categorias
-// POST   /api/categories       → Cria uma nova categoria
-// PUT    /api/categories/{id}  → Atualiza uma categoria
-// DELETE /api/categories/{id}  → Remove uma categoria
+// GET    /api/categories        Lista todas as categorias
+// POST   /api/categories        Cria uma nova categoria
+// PUT    /api/categories/{id}   Atualiza uma categoria
+// DELETE /api/categories/{id}   Remove uma categoria
 // =============================================================================
 
 using Microsoft.AspNetCore.Authorization;

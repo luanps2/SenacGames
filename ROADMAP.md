@@ -1,7 +1,7 @@
 # ROADMAP — SenacGames
 
 > Guia passo a passo para criar a solução SenacGames do zero.
-> Voltado para alunos iniciantes em ASP.NET Core MVC e arquitetura em camadas.
+> Voltado para alunos iniciantes em ASP.NET Core MVC, arquitetura em camadas e Windows Forms.
 
 ---
 
@@ -20,6 +20,7 @@
 11. [Projeto API](#11-projeto-api)
 12. [Projeto UI (MVC)](#12-projeto-ui-mvc)
 13. [Executando a Aplicação](#13-executando-a-aplicação)
+14. [Construindo o SenacGames.Desktop](#14-construindo-o-senacgamesdesktop)
 
 ---
 
@@ -37,32 +38,37 @@ A arquitetura em camadas separa o código em projetos com responsabilidades espe
 ### Estrutura do SenacGames
 
 ```
-┌─────────────┐   ┌─────────────┐
-│ SenacGames │   │ SenacGames │
-│   .API  │   │   .UI   │
-│ (API REST) │   │  (MVC)  │
-└──────┬──────┘   └──────┬──────┘
-    │          │
-    └────────┬──────────┘
-        │
-    ┌────────▼────────┐
-    │  SenacGames  │
-    │ .Application  │
-    │ (Serviços/DTOs)│
-    └────────┬────────┘
-        │
-    ┌────────▼────────┐
-    │  SenacGames  │
-    │  .Domain   │
-    │ (Entidades)  │
-    └─────────────────┘
-        ▲
-    ┌────────┴────────┐
-    │  SenacGames  │
-    │ .Infrastructure │
-    │ (EF Core/BD)  │
-    └─────────────────┘
+┌──────────────┐   ┌──────────────┐   ┌──────────────────┐
+│ SenacGames   │   │ SenacGames   │   │ SenacGames       │
+│    .API      │   │    .UI       │   │    .Desktop      │
+│ (API REST)   │   │   (MVC)      │   │ (Windows Forms)  │
+└──────┬───────┘   └──────┬───────┘   └────────┬─────────┘
+       │                  │                    │ HTTP
+       └──────────────────┘                    │
+                │                              │
+       ┌────────▼──────────────────────────────┘
+       │
+  ┌────▼────────────┐
+  │   SenacGames    │
+  │  .Application   │
+  │ (Serviços/DTOs) │
+  └────────┬────────┘
+           │
+  ┌────────▼────────┐
+  │   SenacGames    │
+  │    .Domain      │
+  │  (Entidades)    │
+  └─────────────────┘
+           ▲
+  ┌────────┴────────┐
+  │   SenacGames    │
+  │ .Infrastructure │
+  │  (EF Core/BD)   │
+  └─────────────────┘
 ```
+
+> **Importante**: O Desktop se comunica **apenas** com a API via HTTP.
+> Ele não conhece nem referencia as camadas internas da solução.
 
 ### Papel de cada camada
 
@@ -72,15 +78,16 @@ A arquitetura em camadas separa o código em projetos com responsabilidades espe
 | **Application** | Class Library | Services, DTOs, ViewModels |
 | **Infrastructure** | Class Library | EF Core, Repositories, Identity |
 | **API** | ASP.NET Core Web API | Endpoints REST, Swagger |
-| **UI** | ASP.NET Core MVC | Controllers, Views, Bootstrap |
+| **UI** | ASP.NET Core MVC | Cliente HTTP da API (Páginas Web) |
+| **Desktop** | Windows Forms | Cliente HTTP da API (Admin Desktop) |
 
-### Fluxo de uma requisição
+### Fluxo de uma requisição (Web e Desktop)
 
 ```
-Usuário → Controller → Service → Repository → Banco de Dados
-         ↓      ↓      ↓
-       ViewModel   DTO    Entidade
+Usuário → Controller/Form → HttpService → HttpClient → API → Application Service → Repository → BD
 ```
+
+> **Importante:** Tanto a UI (Web) quanto o Desktop **nunca** tocam nas camadas internas. Ambos são clientes que falam com a API via HTTP.
 
 ---
 
@@ -686,9 +693,9 @@ dotnet run --project SenacGames.UI
 
 ---
 
-## Resumo Final
+## Resumo Final (Seções 1–13)
 
-Ao concluir todos os passos deste roadmap, você terá:
+Ao concluir os passos 1 a 13 deste roadmap, você terá:
 
 - Uma solution com 5 projetos em camadas
 - Entidades Game e Category com EF Core
@@ -701,4 +708,505 @@ Ao concluir todos os passos deste roadmap, você terá:
 - Seed Data com dados iniciais
 - Design moderno baseado no protótipo Stitch
 
-**Parabéns!** Você construiu uma aplicação completa e profissional do zero!
+Continue para a **seção 14** para adicionar o cliente Desktop Windows Forms!
+
+---
+
+## 14. Construindo o SenacGames.Desktop
+
+### Objetivo desta camada
+
+O `SenacGames.Desktop` é uma aplicação **Windows Forms** que funciona como
+**cliente administrativo** do sistema, consumindo exclusivamente a API já existente.
+
+**Por que adicionar um Desktop?**
+- Demonstra que a mesma API pode ser consumida por múltiplos clientes
+- Ensina consumo de API REST com `HttpClient` em aplicações desktop
+- Apresenta o padrão de **Cookie Authentication** em clientes não-web
+- Mostra o uso do Guna.UI2 para interfaces modernas no Windows Forms
+
+**Regras obrigatórias:**
+- ❌ NÃO acessar banco de dados diretamente
+- ❌ NÃO referenciar `SenacGames.Infrastructure`
+- ❌ NÃO referenciar `SenacGames.Domain`
+- ❌ NÃO referenciar `SenacGames.Application`
+- ✅ TODA comunicação ocorre via endpoints da API
+
+---
+
+### 14.1 — Por que Windows Forms?
+
+O Windows Forms é o framework de interface desktop mais didático do .NET:
+- Componentes visuais arrastáveis (Designer)
+- Curva de aprendizado baixa para iniciantes
+- Suporte nativo ao .NET 8
+- Base para entender padrões de interface (eventos, controles, layouts)
+
+### 14.2 — Por que Guna.UI2?
+
+O Guna.UI2.WinForms é uma biblioteca de componentes visuais para Windows Forms que oferece:
+- Botões animados com hover suave
+- Painéis com bordas arredondadas e sombras
+- Campos de texto com placeholder e estilos modernos
+- Visual próximo ao Material Design / Fluent Design
+- Elimina a aparência "antiga" do Windows Forms padrão
+
+---
+
+### 14.3 — Criação do Projeto Desktop
+
+#### Via Visual Studio
+
+1. Clique com o botão direito na Solution → **Adicionar** → **Novo Projeto**
+2. Procure por **"Aplicativo do Windows Forms"**
+3. Nome: `SenacGames.Desktop`
+4. Framework: **.NET 8.0**
+5. Clique em **Criar**
+
+#### Opção 2 — PowerShell
+
+```powershell
+# PowerShell — cria o projeto e adiciona à solution:
+dotnet new winforms -n SenacGames.Desktop -o SenacGames.Desktop --framework net8.0
+dotnet sln add SenacGames.Desktop/SenacGames.Desktop.csproj
+```
+
+#### Opção 3 — Prompt de Comando (CMD)
+
+```cmd
+REM CMD:
+dotnet new winforms -n SenacGames.Desktop -o SenacGames.Desktop --framework net8.0
+dotnet sln add SenacGames.Desktop\SenacGames.Desktop.csproj
+```
+
+> **Nota**: O template gera automaticamente `net8.0-windows` com `<UseWindowsForms>true</UseWindowsForms>`.
+
+---
+
+### 14.4 — Instalação das Dependências
+
+#### Guna.UI2.WinForms
+
+##### Opção 1 — Console do Gerenciador de Pacotes (Package Manager Console)
+
+Acesse: **Ferramentas → Gerenciador de Pacotes NuGet → Console do Gerenciador de Pacotes**
+
+> **IMPORTANTE**: No dropdown "Projeto padrão", selecione **SenacGames.Desktop**.
+
+```powershell
+Install-Package Guna.UI2.WinForms
+```
+
+##### Opção 2 — PowerShell
+
+```powershell
+dotnet add SenacGames.Desktop package Guna.UI2.WinForms
+```
+
+##### Opção 3 — Prompt de Comando (CMD)
+
+```cmd
+dotnet add SenacGames.Desktop package Guna.UI2.WinForms
+```
+
+#### HttpClient (nativo do .NET)
+
+O `HttpClient` já faz parte do .NET — não precisa instalar pacote adicional.
+Basta usar o namespace `System.Net.Http`.
+
+---
+
+### 14.5 — Estrutura de Pastas Recomendada
+
+```
+SenacGames.Desktop/
+├── Forms/
+│   ├── LoginForm.cs           → Tela de login
+│   ├── MainForm.cs            → Shell: sidebar + painel de conteúdo
+│   ├── GameFormDialog.cs      → Dialog: criar/editar game
+│   └── UsuarioFormDialog.cs   → Dialog: criar usuário
+│
+├── UserControls/
+│   ├── DashboardUserControl.cs   → Métricas + últimos games
+│   ├── GamesUserControl.cs       → CRUD de games
+│   ├── CategoriasUserControl.cs  → CRUD de categorias
+│   ├── UsuariosUserControl.cs    → Gerenciamento de usuários
+│   └── PerfilUserControl.cs      → Perfil do usuário logado
+│
+├── Services/
+│   ├── AuthApiService.cs         → /api/auth/*
+│   ├── GamesApiService.cs        → /api/games/*
+│   ├── CategoriasApiService.cs   → /api/categories/*
+│   └── UsuariosApiService.cs     → /api/users/*
+│
+├── DTOs/
+│   ├── AuthDtos.cs       → LoginRequestDto, UserResponseDto
+│   ├── GameDtos.cs       → GameResponseDto, CreateGameDto, UpdateGameDto
+│   ├── CategoriaDtos.cs  → CategoriaResponseDto, CreateCategoriaDto
+│   └── UsuarioDtos.cs    → UsuarioResponseDto, CreateUsuarioDto
+│
+├── Helpers/
+│   ├── HttpClientHelper.cs  → HttpClient Singleton + CookieContainer
+│   ├── SessionManager.cs    → Singleton: dados do usuário logado
+│   └── AppConfig.cs         → Leitura do appsettings.json
+│
+├── Themes/
+│   └── SenacTheme.cs        → Design system: cores, fontes, dimensões
+│
+├── appsettings.json           → URL da API e configurações
+├── Program.cs                 → Ponto de entrada
+└── SenacGames.Desktop.csproj
+```
+
+---
+
+### 14.6 — Autenticação via API
+
+#### Como funciona o Cookie Authentication no Desktop
+
+A API usa **Cookie Authentication** do ASP.NET Core Identity.
+Ao contrário do JWT, o cookie é gerenciado automaticamente pelo servidor.
+
+**Fluxo:**
+1. Desktop envia `POST /api/auth/login` com email e senha (JSON)
+2. A API valida e retorna um **cookie de sessão**
+3. O `CookieContainer` do `HttpClientHandler` armazena o cookie
+4. As próximas requisições enviam o cookie automaticamente
+5. A API autentica o usuário pelo cookie em cada requisição
+
+#### Configuração do HttpClient com CookieContainer
+
+```csharp
+// Helpers/HttpClientHelper.cs
+using System.Net;
+
+private HttpClientHelper()
+{
+    // CookieContainer: armazena os cookies recebidos da API
+    var cookieContainer = new CookieContainer();
+
+    var handler = new HttpClientHandler
+    {
+        CookieContainer = cookieContainer,
+        UseCookies = true,           // gerencia cookies automaticamente
+        AllowAutoRedirect = false,   // a API retorna 401, não redireciona
+        // aceita SSL em desenvolvimento:
+        ServerCertificateCustomValidationCallback =
+            HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+    };
+
+    _client = new HttpClient(handler)
+    {
+        BaseAddress = new Uri("https://localhost:7000"),
+        Timeout = TimeSpan.FromSeconds(30)
+    };
+}
+```
+
+#### Tela de Login
+
+```csharp
+// Forms/LoginForm.cs
+private async void BtnEntrar_Click(object? sender, EventArgs e)
+{
+    var (success, user, error) = await _authService.LoginAsync(
+        txtEmail.Text, txtSenha.Text);
+
+    if (success && user != null)
+    {
+        SessionManager.Instance.SetUser(user); // armazena na sessão
+        this.Hide();
+        using var mainForm = new MainForm();
+        mainForm.ShowDialog();
+        this.Close();
+    }
+    else
+    {
+        lblErro.Text = error; // exibe mensagem de erro
+    }
+}
+```
+
+---
+
+### 14.7 — Controle de Permissões
+
+O controle de acesso funciona em duas camadas:
+
+1. **API**: verifica o cookie e a role (`[Authorize(Roles = "Admin")]`)
+2. **Desktop**: oculta/mostra botões baseado no perfil (experiência de usuário)
+
+#### SessionManager (Singleton)
+
+```csharp
+// Helpers/SessionManager.cs
+public sealed class SessionManager
+{
+    public static SessionManager Instance { get; } = new();
+    public UserResponseDto? CurrentUser { get; private set; }
+
+    // Retorna true se o usuário tem a role "Admin"
+    public bool IsAdmin => CurrentUser?.Roles.Contains("Admin") ?? false;
+
+    public void SetUser(UserResponseDto user) => CurrentUser = user;
+    public void Clear() => CurrentUser = null;
+}
+```
+
+#### Aplicando no MainForm
+
+```csharp
+// Forms/MainForm.cs
+private void ConfigurarPermissoes()
+{
+    bool isAdmin = SessionManager.Instance.IsAdmin;
+
+    // Módulos exclusivos para Admin
+    btnCategorias.Visible = isAdmin;
+    btnUsuarios.Visible = isAdmin;
+}
+```
+
+| Perfil | Dashboard | Games | Categorias | Usuários |
+|--------|-----------|-------|-----------|----------|
+| Admin | ✅ | ✅ CRUD | ✅ CRUD | ✅ CRUD |
+| Usuário Comum | ✅ | 👁️ Leitura | ❌ | ❌ |
+
+---
+
+### 14.8 — UserControls: por que usar?
+
+Em vez do padrão antigo **MDI** (Multiple Document Interface — janelas filhas),
+usamos o padrão moderno de **navegação por UserControls**:
+
+- Um painel central (`pnlConteudo`) recebe UserControls dinamicamente
+- A sidebar exibe botões de navegação
+- Ao clicar num botão, o UserControl anterior é removido e o novo é adicionado
+
+**Vantagens:**
+- Interface mais fluida (sem janelas sobrepostas)
+- Controle total sobre o layout
+- Semelhante à navegação de SPAs web
+- Cada "página" é um componente isolado e reutilizável
+
+#### Padrão de navegação no MainForm
+
+```csharp
+// Forms/MainForm.cs
+private UserControl? _controlAtual;
+
+private void Navegar(UserControl control, Guna2Button? botao = null)
+{
+    // Remove o controle anterior e libera recursos
+    if (_controlAtual != null)
+    {
+        pnlConteudo.Controls.Remove(_controlAtual);
+        _controlAtual.Dispose();
+    }
+
+    // Adiciona o novo UserControl preenchendo o painel
+    control.Dock = DockStyle.Fill;
+    pnlConteudo.Controls.Add(control);
+    _controlAtual = control;
+
+    AtualizarBotaoAtivo(botao); // destaca o botão na sidebar
+}
+
+// Uso:
+btnGames.Click += (s, e) => Navegar(new GamesUserControl(), btnGames);
+```
+
+#### DashboardUserControl
+
+Exibe métricas gerais do sistema:
+- Cards com: total de games, total de categorias
+- Grid com os últimos 10 games cadastrados
+- Dados carregados em paralelo da API (`Task.WhenAll`)
+
+#### GamesUserControl
+
+CRUD completo de games:
+- Listagem em `DataGridView` estilizado
+- Pesquisa em tempo real (filtro em memória)
+- Botões Novo / Editar / Excluir (visíveis apenas para Admin)
+- `GameFormDialog` para criar e editar
+
+#### CategoriasUserControl
+
+CRUD de categorias:
+- Listagem em `DataGridView`
+- Formulário lateral inline (sem abrir nova janela)
+- Validação: não permite excluir categoria com games vinculados
+
+#### UsuariosUserControl
+
+Gerenciamento de usuários do Identity:
+- Listagem de usuários cadastrados
+- Pesquisa por email
+- Criar novo usuário com seleção de perfil
+- Excluir usuário
+
+---
+
+### 14.9 — CRUD de Games via API
+
+```csharp
+// Services/GamesApiService.cs
+
+// Listar todos os games
+public async Task<List<GameResponseDto>> GetAllAsync()
+{
+    var games = await _http.GetAsync<List<GameResponseDto>>("/api/games");
+    return games ?? new();
+}
+
+// Criar game (Admin)
+public async Task<(bool, GameResponseDto?, string)> CreateAsync(CreateGameDto dto)
+    => await _http.PostAsync<GameResponseDto>("/api/games", dto);
+
+// Editar game (Admin)
+public async Task<(bool, GameResponseDto?, string)> UpdateAsync(int id, UpdateGameDto dto)
+    => await _http.PutAsync<GameResponseDto>($"/api/games/{id}", dto);
+
+// Excluir game (Admin)
+public async Task<(bool, string)> DeleteAsync(int id)
+    => await _http.DeleteAsync($"/api/games/{id}");
+```
+
+**Campos do formulário de Game:**
+- Título (obrigatório)
+- Descrição
+- Ano de lançamento (validado entre 1970 e ano atual + 2)
+- URL da capa
+- Categoria (ComboBox carregado da API)
+- Destaque (CheckBox)
+
+---
+
+### 14.10 — CRUD de Categorias via API
+
+```csharp
+// Services/CategoriasApiService.cs
+
+// Listar categorias
+public async Task<List<CategoriaResponseDto>> GetAllAsync()
+{
+    var cats = await _http.GetAsync<List<CategoriaResponseDto>>("/api/categories");
+    return cats ?? new();
+}
+
+// Criar categoria (Admin)
+public async Task<(bool, CategoriaResponseDto?, string)> CreateAsync(CreateCategoriaDto dto)
+    => await _http.PostAsync<CategoriaResponseDto>("/api/categories", dto);
+
+// Editar categoria (Admin)
+public async Task<(bool, CategoriaResponseDto?, string)> UpdateAsync(int id, UpdateCategoriaDto dto)
+    => await _http.PutAsync<CategoriaResponseDto>($"/api/categories/{id}", dto);
+
+// Excluir categoria (Admin)
+public async Task<(bool, string)> DeleteAsync(int id)
+    => await _http.DeleteAsync($"/api/categories/{id}");
+```
+
+**Campo do formulário:**
+- Nome da categoria (obrigatório)
+
+---
+
+### 14.11 — CRUD de Usuários via API
+
+O gerenciamento de usuários integra com o **ASP.NET Core Identity** já configurado na API.
+
+**Integração com Identity:**
+- Os usuários são criados e gerenciados pelo Identity
+- As roles (Admin / User) são atribuídas pelo sistema
+- Redefinição de senha também passa pela API
+
+**Campos do formulário:**
+- E-mail (obrigatório)
+- Senha (mínimo 6 caracteres)
+- Confirmação de senha
+- Perfil: Admin ou Usuário Comum
+
+**Ações disponíveis para Admin:**
+- Listar usuários
+- Pesquisar por email
+- Criar novo usuário
+- Excluir usuário
+- Alterar perfil (role)
+- Redefinir senha
+
+> **Nota**: Os endpoints `/api/users` precisam ser implementados na API
+> (um `UsersController`) para que o módulo de usuários funcione completamente.
+
+---
+
+### 14.12 — Configuração do appsettings.json do Desktop
+
+Edite `SenacGames.Desktop/appsettings.json` com a URL da API:
+
+```json
+{
+  "ApiBaseUrl": "https://localhost:7000",
+  "AppSettings": {
+    "AppName": "SenacGames Desktop",
+    "Version": "1.0.0",
+    "Timeout": 30
+  }
+}
+```
+
+> Verifique a porta real em `SenacGames.API/Properties/launchSettings.json`.
+
+---
+
+### 14.13 — Executando o Desktop
+
+**Pré-requisito**: A API deve estar em execução antes de abrir o Desktop.
+
+#### Opção 1 — Visual Studio
+
+1. Defina `SenacGames.Desktop` como projeto de inicialização
+2. Pressione **F5** ou clique em **Iniciar**
+
+#### Opção 2 — PowerShell
+
+```powershell
+# Primeiro, inicie a API:
+dotnet run --project SenacGames.API
+
+# Em outro terminal, inicie o Desktop:
+dotnet run --project SenacGames.Desktop
+```
+
+#### Opção 3 — Prompt de Comando (CMD)
+
+```cmd
+REM Terminal 1 — API:
+dotnet run --project SenacGames.API
+
+REM Terminal 2 — Desktop:
+dotnet run --project SenacGames.Desktop
+```
+
+---
+
+## Resumo Final
+
+Ao concluir todos os passos deste roadmap, você terá:
+
+- Uma solution com **6 projetos** em camadas
+- Entidades Game e Category com EF Core
+- Repositórios e Services organizados
+- API REST com Swagger
+- MVC com Views Razor e Bootstrap 5
+- Autenticação com Identity (Login, Register, Roles)
+- Dashboard administrativo (Web e Desktop)
+- CRUD completo de Games e Categorias
+- Seed Data com dados iniciais
+- Design moderno baseado no protótipo Stitch
+- **Cliente Desktop Windows Forms** com Guna.UI2
+- **Consumo de API REST** via HttpClient com Cookie Authentication
+- **Controle de permissões** por perfil (Admin / Usuário Comum)
+
+**Parabéns!** Você construiu uma aplicação completa, profissional e multi-client do zero!

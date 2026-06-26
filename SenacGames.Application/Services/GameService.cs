@@ -1,13 +1,13 @@
 // =============================================================================
 // SenacGames.Application - GameService
 // =============================================================================
-// 📌 CONCEITO IMPORTANTE: Implementação do Serviço
+//  CONCEITO IMPORTANTE: Implementação do Serviço
 // Esta classe IMPLEMENTA a interface IGameService.
 // Ela usa o repositório (IGameRepository) para acessar o banco de dados
 // e converte as entidades em DTOs antes de retornar para o controller.
 //
 // MAPEAMENTO MANUAL:
-// Neste projeto didático, fazemos o mapeamento Entidade ↔ DTO manualmente.
+// Neste projeto didático, fazemos o mapeamento Entidade  DTO manualmente.
 // Em projetos maiores, você pode usar bibliotecas como AutoMapper.
 // =============================================================================
 
@@ -23,7 +23,7 @@ namespace SenacGames.Application.Services
     /// </summary>
     public class GameService : IGameService
     {
-        // 📌 CONCEITO: Injeção de Dependência
+        //  CONCEITO: Injeção de Dependência
         // O repositório é injetado via construtor. Isso permite que o .NET
         // forneça automaticamente a implementação correta em tempo de execução.
         private readonly IGameRepository _gameRepository;
@@ -135,7 +135,7 @@ namespace SenacGames.Application.Services
         // =====================================================================
         // MÉTODO PRIVADO DE MAPEAMENTO
         // =====================================================================
-        // 📌 CONCEITO: Mapeamento Entidade → DTO
+        //  CONCEITO: Mapeamento Entidade  DTO
         // Este método converte uma entidade Game em um GameDto.
         // Ele é privado porque só é usado internamente pelo serviço.
         // =====================================================================

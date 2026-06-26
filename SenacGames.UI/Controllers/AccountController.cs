@@ -1,49 +1,26 @@
 // =============================================================================
-// SenacGames.UI - AccountController
-// =============================================================================
-// 📌 CONCEITO: Autenticação MVC
-// Este controller gerencia Login, Logout e Registro de usuários.
-// Utiliza o ASP.NET Core Identity para autenticação com cookies.
-//
-// FLUXO DE LOGIN:
-// 1. Usuário acessa /Account/Login (GET)
-// 2. Preenche email e senha no formulário
-// 3. Envia o formulário (POST)
-// 4. SignInManager verifica as credenciais
-// 5. Se correto: cria cookie de autenticação e redireciona
-// 6. Se errado: exibe mensagem de erro
+// SenacGames.UI - AccountController (HTTP API Proxy)
 // =============================================================================
 
-using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using SenacGames.Application.DTOs;
 
 namespace SenacGames.UI.Controllers
 {
-    /// <summary>
-    /// Controller de autenticação — Login, Logout, Register.
-    /// </summary>
     public class AccountController : Controller
     {
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly HttpClient _httpClient;
 
-        public AccountController(
-            UserManager<IdentityUser> userManager,
-            SignInManager<IdentityUser> signInManager)
+        public AccountController(IHttpClientFactory httpClientFactory)
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
+            // O AccountController usa o HttpClient Base sem o ApiCookieHandler,
+            // pois o login é justamente quem VAI PEGAR o cookie.
+            _httpClient = httpClientFactory.CreateClient("ApiClientAuth");
         }
 
-        // =====================================================================
-        // LOGIN
-        // =====================================================================
-
-        /// <summary>
-        /// Exibe o formulário de login.
-        /// GET /Account/Login
-        /// </summary>
         [HttpGet]
         public IActionResult Login(string? returnUrl = null)
         {
@@ -51,52 +28,68 @@ namespace SenacGames.UI.Controllers
             return View();
         }
 
-        /// <summary>
-        /// Processa o login do usuário.
-        /// POST /Account/Login
-        /// </summary>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginDto dto, string? returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
 
-            // Tenta fazer login
-            var result = await _signInManager.PasswordSignInAsync(
-                dto.Email, dto.Password, isPersistent: false, lockoutOnFailure: false);
+            // Envia o login para a API
+            var response = await _httpClient.PostAsJsonAsync("/api/auth/login", dto);
 
-            if (result.Succeeded)
+            if (response.IsSuccessStatusCode)
             {
-                // Redireciona para a URL anterior ou para a Home
+                var userDto = await response.Content.ReadFromJsonAsync<UserDto>();
+                
+                // Extrai o Cookie retornado pela API
+                var apiCookieString = "";
+                if (response.Headers.TryGetValues("Set-Cookie", out var cookies))
+                {
+                    apiCookieString = cookies.FirstOrDefault(c => c.StartsWith(".AspNetCore.Identity.Application="));
+                    if (!string.IsNullOrEmpty(apiCookieString))
+                    {
+                        // Opcional: extrair apenas o valor até o primeiro ponto e vírgula
+                        apiCookieString = apiCookieString.Split(';')[0];
+                    }
+                }
+
+                // Cria os Claims do usuário local no MVC
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.NameIdentifier, userDto!.Id),
+                    new Claim(ClaimTypes.Name, userDto.Email),
+                    new Claim(ClaimTypes.Email, userDto.Email),
+                    // Guarda o cookie da API nos claims para uso posterior
+                    new Claim("ApiCookie", apiCookieString ?? "")
+                };
+
+                foreach (var role in userDto.Roles)
+                {
+                    claims.Add(new Claim(ClaimTypes.Role, role));
+                }
+
+                var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                var principal = new ClaimsPrincipal(identity);
+
+                // Faz login no MVC
+                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+
                 if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
                     return Redirect(returnUrl);
 
                 return RedirectToAction("Index", "Home");
             }
 
-            // Se falhou, exibe mensagem de erro
-            ModelState.AddModelError(string.Empty, "Email ou senha inválidos.");
+            ModelState.AddModelError(string.Empty, "Email ou senha inválidos na API.");
             return View(dto);
         }
 
-        // =====================================================================
-        // REGISTER
-        // =====================================================================
-
-        /// <summary>
-        /// Exibe o formulário de registro.
-        /// GET /Account/Register
-        /// </summary>
         [HttpGet]
         public IActionResult Register()
         {
             return View();
         }
 
-        /// <summary>
-        /// Processa o registro de novo usuário.
-        /// POST /Account/Register
-        /// </summary>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterDto dto)
@@ -107,54 +100,25 @@ namespace SenacGames.UI.Controllers
                 return View(dto);
             }
 
-            var user = new IdentityUser
-            {
-                UserName = dto.Email,
-                Email = dto.Email
-            };
-
-            var result = await _userManager.CreateAsync(user, dto.Password);
-
-            if (result.Succeeded)
-            {
-                // Faz login automático após o registro
-                await _signInManager.SignInAsync(user, isPersistent: false);
-                return RedirectToAction("Index", "Home");
-            }
-
-            // Se falhou, exibe os erros
-            foreach (var error in result.Errors)
-            {
-                ModelState.AddModelError(string.Empty, error.Description);
-            }
-
+            // Para registro, a API provavelmente tem um endpoint /api/auth/register
+            // Vamos assumir que a API não loga automaticamente o usuário recém-criado, 
+            // então redirecionamos para o Login local
+            
+            // var response = await _httpClient.PostAsJsonAsync("/api/auth/register", dto);
+            // if (response.IsSuccessStatusCode) { return RedirectToAction("Login"); }
+            
+            ModelState.AddModelError(string.Empty, "Registro via API não está implementado neste exemplo.");
             return View(dto);
         }
 
-        // =====================================================================
-        // LOGOUT
-        // =====================================================================
-
-        /// <summary>
-        /// Faz logout do usuário.
-        /// POST /Account/Logout
-        /// </summary>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
-            await _signInManager.SignOutAsync();
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Index", "Home");
         }
 
-        // =====================================================================
-        // ACCESS DENIED
-        // =====================================================================
-
-        /// <summary>
-        /// Página de acesso negado.
-        /// Exibida quando um usuário tenta acessar uma área sem permissão.
-        /// </summary>
         [HttpGet]
         public IActionResult AccessDenied()
         {

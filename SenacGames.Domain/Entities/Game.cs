@@ -5,7 +5,7 @@
 // Ela pertence à camada de DOMÍNIO, que é responsável por definir as entidades
 // e regras de negócio do sistema.
 //
-// 📌 CONCEITO IMPORTANTE:
+//  CONCEITO IMPORTANTE:
 // A camada Domain NÃO depende de nenhuma outra camada.
 // Ela é o "coração" da aplicação e define O QUE o sistema é.
 // =============================================================================
@@ -47,7 +47,7 @@ namespace SenacGames.Domain.Entities
 
         /// <summary>
         /// Chave estrangeira (FK) que relaciona o game com uma categoria.
-        /// 📌 CONCEITO: Foreign Key - conecta duas tabelas no banco de dados.
+        ///  CONCEITO: Foreign Key - conecta duas tabelas no banco de dados.
         /// </summary>
         public int CategoryId { get; set; }
 
@@ -64,7 +64,7 @@ namespace SenacGames.Domain.Entities
         // =====================================================================
         // NAVIGATION PROPERTY (Propriedade de Navegação)
         // =====================================================================
-        // 📌 CONCEITO IMPORTANTE:
+        //  CONCEITO IMPORTANTE:
         // Navigation Properties permitem que o Entity Framework carregue
         // automaticamente os dados relacionados de outra tabela.
         // Aqui, cada Game "navega" até sua Category correspondente.
