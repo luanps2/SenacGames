@@ -1,10 +1,10 @@
 // =============================================================================
 // SenacGames.UI - HomeController
 // =============================================================================
-// 📌 CONCEITO: Controller MVC
+//  CONCEITO: Controller MVC
 // Um Controller recebe requisições HTTP e retorna Views (páginas HTML).
 // Cada método público (Action) corresponde a uma URL.
-// Exemplo: HomeController.Index() → URL: /Home/Index ou /
+// Exemplo: HomeController.Index()  URL: /Home/Index ou /
 // =============================================================================
 
 using Microsoft.AspNetCore.Mvc;
@@ -22,7 +22,7 @@ namespace SenacGames.UI.Controllers
         private readonly IGameService _gameService;
         private readonly ICategoryService _categoryService;
 
-        // 📌 CONCEITO: Dependency Injection no Controller
+        //  CONCEITO: Dependency Injection no Controller
         // Os serviços são injetados automaticamente pelo .NET
         public HomeController(IGameService gameService, ICategoryService categoryService)
         {

@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- Tipo de saída: executável Windows (sem console) -->
+    <OutputType>WinExe</OutputType>
+    <!-- Target framework com suporte a Windows Forms -->
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <!-- Habilita verificação de nulos em tempo de compilação -->
+    <Nullable>enable</Nullable>
+    <!-- Habilita Windows Forms -->
+    <UseWindowsForms>true</UseWindowsForms>
+    <!-- Geração automática de usings globais -->
+    <ImplicitUsings>enable</ImplicitUsings>
+    <!-- Nome do assembly -->
+    <AssemblyName>SenacGames.Desktop</AssemblyName>
+    <!-- Namespace raiz do projeto -->
+    <RootNamespace>SenacGames.Desktop</RootNamespace>
+    <!-- Versão do aplicativo -->
+    <Version>1.0.0</Version>
+    <!-- Descrição do produto -->
+    <Description>SenacGames Desktop - Cliente administrativo Windows Forms</Description>
+    <!-- Alto DPI para interfaces nítidas em monitores modernos -->
+    <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
+    <!-- Permite o uso de recursos específicos do Windows -->
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Guna.UI2.WinForms: componentes visuais modernos para Windows Forms -->
+    <!-- Instalação: dotnet add package Guna.UI2.WinForms -->
+    <PackageReference Include="Guna.UI2.WinForms" Version="2.0.4.8" />
+  </ItemGroup>
+
+</Project>

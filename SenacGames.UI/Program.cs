@@ -1,71 +1,64 @@
 // =============================================================================
 // SenacGames.UI - Program.cs
 // =============================================================================
-// 📌 CONCEITO: Este é o ponto de entrada da aplicação MVC (Web).
-// Aqui configuramos o servidor web que serve as páginas HTML (Razor Views).
-//
-// A diferença para o Program.cs da API:
-// - API: retorna JSON (dados) — AddControllers()
-// - MVC: retorna HTML (páginas) — AddControllersWithViews()
-// =============================================================================
 
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using SenacGames.Application.Interfaces;
-using SenacGames.Application.Services;
-using SenacGames.Domain.Interfaces;
-using SenacGames.Infrastructure.Context;
-using SenacGames.Infrastructure.Identity;
-using SenacGames.Infrastructure.Repositories;
+using SenacGames.UI.Helpers;
+using SenacGames.UI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // =====================================================================
-// ENTITY FRAMEWORK CORE — Banco de dados
+// AUTENTICAÇÃO MVC NATIVA
 // =====================================================================
-builder.Services.AddDbContext<SenacGamesDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Account/Login";
+        options.LogoutPath = "/Account/Logout";
+        options.AccessDeniedPath = "/Account/AccessDenied";
+    });
+
+// Permite acessar o HttpContext (necessário para o ApiCookieHandler)
+builder.Services.AddHttpContextAccessor();
 
 // =====================================================================
-// ASP.NET CORE IDENTITY — Autenticação
+// HTTP CLIENTS & SERVIÇOS DA API
 // =====================================================================
-builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
-{
-    options.Password.RequireDigit = true;
-    options.Password.RequireLowercase = true;
-    options.Password.RequireUppercase = true;
-    options.Password.RequireNonAlphanumeric = true;
-    options.Password.RequiredLength = 6;
-})
-.AddEntityFrameworkStores<SenacGamesDbContext>()
-.AddDefaultTokenProviders();
+// Registra o Handler que injeta o Cookie
+builder.Services.AddTransient<ApiCookieHandler>();
 
-// Configuração dos cookies de autenticação
-builder.Services.ConfigureApplicationCookie(options =>
+// Resolve a URL dinamicamente via ApiEndpointResolver
+var apiBaseUrl = AppConfig.ApiBaseUrl;
+
+// Cliente para autenticação (sem interceptador)
+builder.Services.AddHttpClient("ApiClientAuth", client =>
 {
-    options.LoginPath = "/Account/Login";               // Redireciona para login
-    options.LogoutPath = "/Account/Logout";              // Redireciona para logout
-    options.AccessDeniedPath = "/Account/AccessDenied";  // Página de acesso negado
+    client.BaseAddress = new Uri(apiBaseUrl);
 });
 
-// =====================================================================
-// DEPENDENCY INJECTION — Repositórios e Serviços
-// =====================================================================
-builder.Services.AddScoped<IGameRepository, GameRepository>();
-builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
-builder.Services.AddScoped<IGameService, GameService>();
-builder.Services.AddScoped<ICategoryService, CategoryService>();
+// Cliente padrão para serviços (com interceptador de cookie)
+builder.Services.AddHttpClient("ApiClient", client =>
+{
+    client.BaseAddress = new Uri(apiBaseUrl);
+})
+.AddHttpMessageHandler<ApiCookieHandler>();
+
+// Serviços da UI consumindo a API
+builder.Services.AddScoped<IGameService>(sp => 
+    new HttpGameService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("ApiClient")));
+
+builder.Services.AddScoped<ICategoryService>(sp => 
+    new HttpCategoryService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("ApiClient")));
 
 // =====================================================================
-// MVC — Adiciona suporte a Controllers + Views (Razor)
+// MVC
 // =====================================================================
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-// =====================================================================
-// PIPELINE DE MIDDLEWARES
-// =====================================================================
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -73,26 +66,17 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseStaticFiles(); // Serve arquivos estáticos (CSS, JS, imagens) de wwwroot
+app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseAuthentication(); // 📌 IMPORTANTE: Sempre ANTES de UseAuthorization
+app.UseAuthentication();
 app.UseAuthorization();
 
-// =====================================================================
-// ROTAS — Configuração de rotas MVC
-// =====================================================================
-// 📌 CONCEITO: Rota padrão do MVC
-// {controller=Home}/{action=Index}/{id?}
-// Significa: /NomeController/NomeAction/IdOpcional
-// Exemplo: /Games/Details/5 → GamesController.Details(5)
-// =====================================================================
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-// Seed Data — Popula o banco com dados iniciais
-await SeedData.SeedAsync(app.Services);
+// Removemos a chamada do SeedData.SeedAsync pois o banco não pertence mais à UI
 
 app.Run();

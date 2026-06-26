@@ -1,7 +1,7 @@
 // =============================================================================
 // SenacGames.UI - AdminController
 // =============================================================================
-// 📌 CONCEITO: [Authorize] e Roles
+//  CONCEITO: [Authorize] e Roles
 // O atributo [Authorize(Roles = "Admin")] protege este controller.
 // Apenas usuários autenticados COM a role "Admin" podem acessar.
 // Se um usuário não autenticado tentar acessar, será redirecionado ao Login.

@@ -1,6 +1,7 @@
 # SenacGames
 
-> Aplicação completa ASP.NET Core MVC em arquitetura de camadas para ensino.
+> Aplicação completa ASP.NET Core em arquitetura de camadas para ensino.
+> Inclui API REST, aplicação MVC e cliente Desktop Windows Forms.
 
 ## Sobre o Projeto
 
@@ -13,38 +14,152 @@ O **SenacGames** é um catálogo de jogos desenvolvido como projeto didático pa
 - CRUD completo
 - Razor Views
 - Bootstrap 5
+- Windows Forms
+- Consumo de API via HttpClient
 
 ## Tecnologias Utilizadas
 
 | Tecnologia | Versão | Uso |
 |------------|--------|-----|
 | .NET | 8.0 | Framework principal |
-| ASP.NET Core MVC | 8.0 | Aplicação web |
+| ASP.NET Core MVC | 8.0 | Aplicação web (UI) |
+| ASP.NET Core Web API | 8.0 | API REST |
 | Entity Framework Core | 8.0.11 | ORM / Acesso a dados |
 | SQL Server LocalDB | — | Banco de dados |
 | ASP.NET Core Identity | 8.0 | Autenticação |
 | Bootstrap | 5.3 | Framework CSS |
 | Bootstrap Icons | 1.11 | Ícones |
 | Swagger | 6.5 | Documentação da API |
+| Windows Forms | 8.0 | Aplicação Desktop |
+| Guna.UI2.WinForms | 2.0.4.8 | Componentes visuais do Desktop |
 
 ## Estrutura das Camadas
 
 ```
 SenacGames/
-├── SenacGames.Domain     → Entidades, Interfaces
+├── SenacGames.Domain        → Entidades, Interfaces
 ├── SenacGames.Application   → Services, DTOs, ViewModels
 ├── SenacGames.Infrastructure → DbContext, Repositories, Identity, Migrations
-├── SenacGames.API       → Controllers REST, Swagger
-└── SenacGames.UI       → Controllers MVC, Views Razor, Bootstrap
+├── SenacGames.API           → Controllers REST, Swagger
+├── SenacGames.UI            → Controllers MVC, Views Razor, Bootstrap
+└── SenacGames.Desktop       → Windows Forms, Guna.UI2, cliente HTTP da API
 ```
 
-### Responsabilidade de cada camada:
+### Responsabilidade de cada camada
 
-- **Domain**: Define as entidades (Game, Category) e as interfaces dos repositórios. Não depende de nenhuma outra camada.
-- **Application**: Contém os serviços que orquestram as operações, DTOs para transferência de dados e ViewModels para as Views.
-- **Infrastructure**: Implementa o acesso a dados com Entity Framework Core, os repositórios, o Identity e o Seed Data.
-- **API**: Expõe os endpoints REST com Swagger para testes.
-- **UI**: Aplicação MVC com Razor Views e Bootstrap para a interface do usuário.
+#### SenacGames.Domain
+Define as entidades (`Game`, `Category`) e as interfaces dos repositórios.
+Não depende de nenhuma outra camada — é o núcleo da aplicação.
+
+#### SenacGames.Application
+Contém os serviços que orquestram as operações, DTOs para transferência de dados e ViewModels para as Views.
+Depende apenas do Domain.
+
+#### SenacGames.Infrastructure
+Implementa o acesso a dados com Entity Framework Core, os repositórios, o Identity e o Seed Data.
+Depende do Domain e Application.
+
+#### SenacGames.API
+Expõe os endpoints REST com Swagger para testes. Recebe requisições HTTP e delega ao Application.
+Depende do Application e Infrastructure.
+
+#### SenacGames.UI
+Aplicação MVC com Razor Views e Bootstrap para a interface do usuário web.
+Agora atua como **Cliente HTTP** consumindo a API — **não acessa o banco diretamente**.
+Depende apenas do Application (para DTOs/Interfaces) e não referencia a Infrastructure.
+
+#### SenacGames.Desktop
+Aplicação **Windows Forms** utilizando **Guna.UI2** como cliente administrativo.
+Consome exclusivamente a API existente via HTTP — **não acessa o banco diretamente**.
+Não referencia Infrastructure, Domain nem Application.
+
+## Fluxo da Solução
+
+### Fluxo via UI (Web)
+
+```
+Usuário (Navegador)
+        ↓
+SenacGames.UI  (ASP.NET Core MVC)
+        ↓  HTTP / Cookie Proxy
+SenacGames.API  (REST)
+        ↓
+SenacGames.Application  (Services / DTOs)
+        ↓
+SenacGames.Infrastructure  (EF Core / Identity)
+        ↓
+Banco de Dados (SQL Server)
+```
+
+### Fluxo via Desktop
+
+```
+Usuário (Windows)
+        ↓
+SenacGames.Desktop  (Windows Forms + Guna.UI2)
+        ↓  HTTP / Cookie Auth
+SenacGames.API  (REST)
+        ↓
+SenacGames.Application  (Services / DTOs)
+        ↓
+SenacGames.Infrastructure  (EF Core / Identity)
+        ↓
+Banco de Dados (SQL Server)
+```
+
+> ⚠️ **Importante — Regras dos Clientes (UI e Desktop):**
+> - Eles **NÃO** acessam o banco de dados diretamente.
+> - Eles **NÃO** referenciam `SenacGames.Infrastructure`.
+> - Eles **NÃO** possuem regras de negócio de banco próprias.
+> - Toda comunicação ocorre exclusivamente através dos endpoints da API.
+
+## Dependências por Projeto
+
+### SenacGames.UI
+- ASP.NET Core MVC
+- Bootstrap 5.3
+- Bootstrap Icons 1.11
+
+### SenacGames.API
+- ASP.NET Core Web API
+- Swagger / Swashbuckle 6.5
+
+### SenacGames.Infrastructure
+- Entity Framework Core 8.0.11
+- EF Core SQL Server
+- ASP.NET Core Identity
+
+### SenacGames.Desktop
+- .NET 8 Windows Forms
+- Guna.UI2.WinForms 2.0.4.8
+- HttpClient (nativo do .NET)
+- System.Text.Json (nativo do .NET)
+
+## Instalação do Guna.UI2
+
+Para instalar o Guna.UI2 no projeto `SenacGames.Desktop`:
+
+#### 🖥️ Opção 1 — Console do Gerenciador de Pacotes (Package Manager Console)
+
+Acesse: **Ferramentas → Gerenciador de Pacotes NuGet → Console do Gerenciador de Pacotes**
+
+> **IMPORTANTE**: No dropdown "Projeto padrão", selecione **SenacGames.Desktop**.
+
+```powershell
+Install-Package Guna.UI2.WinForms
+```
+
+#### Opção 2 — PowerShell
+
+```powershell
+dotnet add SenacGames.Desktop package Guna.UI2.WinForms
+```
+
+#### Opção 3 — CMD
+
+```cmd
+dotnet add SenacGames.Desktop package Guna.UI2.WinForms
+```
 
 ## Como Executar
 
@@ -91,6 +206,15 @@ dotnet run --project SenacGames.UI
 ```
 Acesse: `https://localhost:5002` (ou a porta indicada no terminal)
 
+#### Rodar o Desktop (Windows Forms):
+1. Certifique-se de que a **API está em execução**
+2. Abra `SenacGames.Desktop/appsettings.json` e confirme a porta da API
+3. Execute:
+```bash
+dotnet run --project SenacGames.Desktop
+```
+Ou no Visual Studio: defina `SenacGames.Desktop` como projeto de inicialização e pressione **F5**.
+
 ## Usuário Administrador
 
 O sistema cria automaticamente um usuário admin:
@@ -100,6 +224,16 @@ O sistema cria automaticamente um usuário admin:
 | Email | admin@senacgames.com |
 | Senha | Admin@123 |
 | Role | Admin |
+
+## Controle de Perfis (Desktop)
+
+| Módulo | Admin | Usuário Comum |
+|--------|-------|---------------|
+| Dashboard | ✅ | ✅ |
+| Games (CRUD completo) | ✅ | 👁️ Somente leitura |
+| Categorias | ✅ | ❌ |
+| Usuários | ✅ | ❌ |
+| Perfil | ✅ | ✅ |
 
 ## Endpoints da API
 
@@ -167,6 +301,12 @@ Update-Database -Project SenacGames.Infrastructure -StartupProject SenacGames.AP
 ```bash
 dotnet ef database update --project SenacGames.Infrastructure --startup-project SenacGames.API
 ```
+
+## Documentação Adicional
+
+- [`SenacGames.Desktop/README_DESKTOP.md`](SenacGames.Desktop/README_DESKTOP.md) — Documentação específica do Desktop
+- [`SenacGames.Desktop/DesktopRoadmap.md`](SenacGames.Desktop/DesktopRoadmap.md) — Guia passo a passo para construir o Desktop
+- [`ROADMAP.md`](ROADMAP.md) — Guia completo para criar a solução do zero
 
 ## Licença
 

@@ -1,7 +1,7 @@
 // =============================================================================
 // SenacGames.Application - ViewModels
 // =============================================================================
-// 📌 CONCEITO IMPORTANTE: ViewModels
+//  CONCEITO IMPORTANTE: ViewModels
 // Um ViewModel é um objeto criado especificamente para uma View (tela).
 // Ele contém EXATAMENTE os dados que aquela tela precisa exibir.
 //

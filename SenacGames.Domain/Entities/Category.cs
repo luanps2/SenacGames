@@ -4,7 +4,7 @@
 // Esta classe representa uma categoria de jogos no sistema.
 // Exemplos: "Ação", "RPG", "Corrida", "Terror", etc.
 //
-// 📌 CONCEITO IMPORTANTE:
+//  CONCEITO IMPORTANTE:
 // Uma Category possui MUITOS Games (relação 1:N - um para muitos).
 // Isso significa que cada Category pode ter vários Games associados.
 // =============================================================================
@@ -30,7 +30,7 @@ namespace SenacGames.Domain.Entities
         // =====================================================================
         // NAVIGATION PROPERTY - Coleção de Games
         // =====================================================================
-        // 📌 CONCEITO:
+        //  CONCEITO:
         // Uma Category pode ter VÁRIOS Games associados (relação 1:N).
         // O ICollection<Game> representa essa coleção de games.
         // O Entity Framework usa essa propriedade para fazer JOINs automáticos.

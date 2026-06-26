@@ -1,7 +1,7 @@
 // =============================================================================
 // SenacGames.Application - DTO GameDto
 // =============================================================================
-// 📌 CONCEITO IMPORTANTE: DTO (Data Transfer Object)
+//  CONCEITO IMPORTANTE: DTO (Data Transfer Object)
 // Um DTO é um objeto usado para TRANSFERIR dados entre camadas.
 // Ele contém apenas os dados necessários, sem lógica de negócio.
 //
