@@ -127,7 +127,15 @@ namespace SenacGames.Desktop.UserControls
         /// </summary>
         private void AtualizarNumeroCard(Guna.UI2.WinForms.Guna2Panel card, string numero)
         {
+            // 'card.Controls' retorna a coleção de controles filhos do panel.
+            // 'OfType<Label>()' filtra apenas os controles do tipo 'Label'.
+            // 'FirstOrDefault(...)' pega o primeiro Label que satisfaz a condição ou null se nenhum.
+            // A condição 'l.Tag?.ToString() == "numero"' verifica o Tag do label (pode ser null) e compara como string.
+            // Usamos o operador ?. para evitar NullReference se Tag for null.
             var lblNumero = card.Controls.OfType<Label>().FirstOrDefault(l => l.Tag?.ToString() == "numero");
+
+            // Se encontramos um label correspondente, atualizamos seu texto com o valor fornecido.
+            // Se for null (não encontrou), nada acontece.
             if (lblNumero != null)
                 lblNumero.Text = numero;
         }

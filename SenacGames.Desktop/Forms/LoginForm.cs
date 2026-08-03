@@ -194,6 +194,7 @@ namespace SenacGames.Desktop.Forms
         /// </summary>
         private void SetCarregando(bool carregando)
         {
+            //
             btnEntrar.Enabled = !carregando;
             txtEmail.Enabled = !carregando;
             txtSenha.Enabled = !carregando;

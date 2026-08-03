@@ -1,123 +1,134 @@
 // =============================================================================
 // SenacGames.Desktop - UserControls/UsuariosUserControl.cs
 // =============================================================================
-//  CONCEITO: UserControl de Gerenciamento de Usuários
-//
-// Permite visualizar e gerenciar usuários do ASP.NET Core Identity via API.
-// NOTA: Este módulo é exclusivo para Administradores.
-// =============================================================================
 
 using SenacGames.Desktop.DTOs;
 using SenacGames.Desktop.Forms;
+using SenacGames.Desktop.Helpers;
 using SenacGames.Desktop.Services;
 using SenacGames.Desktop.Themes;
 
 namespace SenacGames.Desktop.UserControls
 {
-    /// <summary>
-    /// Módulo de gerenciamento de Usuários do Identity.
-    /// Exclusivo para Administradores.
-    /// </summary>
     public partial class UsuariosUserControl : UserControl
     {
-        // =====================================================================
-        // SERVIÇOS E DADOS
-        // =====================================================================
         private UsuariosApiService _usuariosService = null!;
-        private List<UsuarioResponseDto> _usuarios = new();
+        private List<UsuarioResponseDto> _todosUsuarios = new();
+        private List<string> _perfis = new();
 
-        // =====================================================================
-        // CONSTRUTOR
-        // =====================================================================
-
-        /// <summary>
-        /// Construtor padrão sem parâmetros — compatível com o Designer.
-        /// </summary>
         public UsuariosUserControl()
         {
             InitializeComponent();
         }
 
-        // =====================================================================
-        // EVENTO LOAD
-        // =====================================================================
-
         private async void UsuariosUserControl_Load(object sender, EventArgs e)
         {
-            // Guard: não executa em tempo de design
             if (DesignMode) return;
 
-            // Inicializa serviço
             _usuariosService = new UsuariosApiService();
-
-            // Aplica estilo ao grid
             SenacTheme.AplicarEstiloGrid(gridUsuarios);
+            ConfigurarPermissoes();
 
-            // Carrega dados
             await CarregarDadosAsync();
         }
 
-        // =====================================================================
-        // DADOS
-        // =====================================================================
+        private void ConfigurarPermissoes()
+        {
+            bool isAdmin = SessionManager.Instance.IsAdmin;
+            btnNovo.Visible = isAdmin;
+            btnEditar.Visible = isAdmin;
+            btnExcluir.Visible = isAdmin;
+        }
+
         private async Task CarregarDadosAsync()
         {
             gridUsuarios.Rows.Clear();
+
             try
             {
-                _usuarios = await _usuariosService.GetAllAsync();
+                var tarefaUsuarios = _usuariosService.GetAllAsync();
+                var tarefaPerfis = _usuariosService.GetPerfisAsync();
+                await Task.WhenAll(tarefaUsuarios, tarefaPerfis);
 
-                if (_usuarios.Count == 0)
-                {
-                    var row = gridUsuarios.Rows.Add();
-                    gridUsuarios.Rows[row].Cells["Id"].Value = "-";
-                    gridUsuarios.Rows[row].Cells["Email"].Value =
-                        "ℹ Endpoint /api/users não implementado na API. Adicione um UsersController.";
-                    gridUsuarios.Rows[row].Cells["Perfil"].Value = "-";
-                    return;
-                }
+                _todosUsuarios = tarefaUsuarios.Result;
+                _perfis = tarefaPerfis.Result;
 
-                foreach (var u in _usuarios)
-                    gridUsuarios.Rows.Add(u.Id, u.Email, u.PerfilPrincipal);
+                PopularGrid(_todosUsuarios);
             }
-            catch
+            catch (Exception ex)
             {
-                var row = gridUsuarios.Rows.Add();
-                gridUsuarios.Rows[row].Cells["Email"].Value =
-                    "⚠ Não foi possível carregar usuários. Verifique se a API está online.";
+                MessageBox.Show($"Erro ao carregar usuários: {ex.Message}", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
+
+        private void PopularGrid(List<UsuarioResponseDto> usuarios)
+        {
+            gridUsuarios.Rows.Clear();
+            foreach (var u in usuarios)
+            {
+                gridUsuarios.Rows.Add(
+                    u.Id,
+                    u.Nome,
+                    u.Email,
+                    u.Perfil);
+            }
+        }
+
+        private void TxtPesquisa_TextChanged(object? sender, EventArgs e) => FiltrarUsuarios();
+
+        private void BtnPesquisar_Click(object? sender, EventArgs e) => FiltrarUsuarios();
 
         private void FiltrarUsuarios()
         {
             var termo = txtPesquisa.Text.Trim().ToLower();
-            gridUsuarios.Rows.Clear();
+            if (string.IsNullOrEmpty(termo))
+            {
+                PopularGrid(_todosUsuarios);
+                return;
+            }
 
-            var filtrados = string.IsNullOrEmpty(termo)
-                ? _usuarios
-                : _usuarios.Where(u => u.Email.Contains(termo, StringComparison.OrdinalIgnoreCase)).ToList();
+            var filtrados = _todosUsuarios
+                .Where(u => u.Nome.Contains(termo, StringComparison.OrdinalIgnoreCase)
+                         || u.Email.Contains(termo, StringComparison.OrdinalIgnoreCase))
+                .ToList();
 
-            foreach (var u in filtrados)
-                gridUsuarios.Rows.Add(u.Id, u.Email, u.PerfilPrincipal);
+            PopularGrid(filtrados);
         }
-
-        // =====================================================================
-        // EVENTOS DOS BOTÕES
-        // =====================================================================
-
-        private void TxtPesquisa_TextChanged(object? sender, EventArgs e)
-            => FiltrarUsuarios();
 
         private async void BtnNovo_Click(object? sender, EventArgs e)
         {
-            using var form = new UsuarioFormDialog();
+            using var form = new UsuarioFormDialog(_perfis, null);
             if (form.ShowDialog() == DialogResult.OK && form.CreateDto != null)
             {
                 var (success, _, error) = await _usuariosService.CreateAsync(form.CreateDto);
                 if (success)
                 {
-                    MessageBox.Show("✅ Usuário criado!", "Sucesso",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show("✅ Usuário criado com sucesso!", "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    await CarregarDadosAsync();
+                }
+                else
+                {
+                    MessageBox.Show($"❌ {error}", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+        private async void BtnEditar_Click(object? sender, EventArgs e)
+        {
+            var usuario = ObterUsuarioSelecionado();
+            if (usuario == null)
+            {
+                MessageBox.Show("Selecione um usuário para editar.", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            using var form = new UsuarioFormDialog(_perfis, usuario);
+            if (form.ShowDialog() == DialogResult.OK && form.UpdateDto != null)
+            {
+                var (success, _, error) = await _usuariosService.UpdateAsync(usuario.Id, form.UpdateDto);
+                if (success)
+                {
+                    MessageBox.Show("✅ Usuário atualizado com sucesso!", "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     await CarregarDadosAsync();
                 }
                 else
@@ -129,30 +140,25 @@ namespace SenacGames.Desktop.UserControls
 
         private async void BtnExcluir_Click(object? sender, EventArgs e)
         {
-            if (gridUsuarios.SelectedRows.Count == 0)
+            var usuario = ObterUsuarioSelecionado();
+            if (usuario == null)
             {
-                MessageBox.Show("Selecione um usuário.", "Aviso",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Selecione um usuário para excluir.", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            var id = gridUsuarios.SelectedRows[0].Cells["Id"].Value?.ToString();
-            var email = gridUsuarios.SelectedRows[0].Cells["Email"].Value?.ToString();
-
-            if (string.IsNullOrEmpty(id) || id == "-") return;
-
             var conf = MessageBox.Show(
-                $"Excluir o usuário \"{email}\"?",
+                $"Tem certeza que deseja excluir o usuário:\n\"{usuario.Nome}\"?",
                 "Confirmar Exclusão",
-                MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Warning);
 
             if (conf != DialogResult.Yes) return;
 
-            var (success, error) = await _usuariosService.DeleteAsync(id);
+            var (success, error) = await _usuariosService.DeleteAsync(usuario.Id);
             if (success)
             {
-                MessageBox.Show("✅ Usuário excluído!", "Sucesso",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("✅ Usuário excluído com sucesso!", "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 await CarregarDadosAsync();
             }
             else
@@ -161,7 +167,17 @@ namespace SenacGames.Desktop.UserControls
             }
         }
 
-        private async void BtnAtualizar_Click(object? sender, EventArgs e)
-            => await CarregarDadosAsync();
+        private async void BtnAtualizar_Click(object? sender, EventArgs e) => await CarregarDadosAsync();
+
+        private UsuarioResponseDto? ObterUsuarioSelecionado()
+        {
+            if (gridUsuarios.SelectedRows.Count == 0) return null;
+            var row = gridUsuarios.SelectedRows[0];
+            var id = row.Cells["colId"].Value?.ToString();
+            return _todosUsuarios.FirstOrDefault(u => u.Id == id);
+        }
+
+        private void GridUsuarios_CellDoubleClick(object? sender, DataGridViewCellEventArgs e)
+            => BtnEditar_Click(sender, e);
     }
 }

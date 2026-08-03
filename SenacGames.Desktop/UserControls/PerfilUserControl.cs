@@ -53,6 +53,7 @@ namespace SenacGames.Desktop.UserControls
             var isAdmin = SessionManager.Instance.IsAdmin;
 
             // Atualiza avatar (inicial do nome)
+            // substring 
             lblAvatar.Text = displayName.Length > 0
                 ? displayName.Substring(0, 1).ToUpper()
                 : "U";
