@@ -4,5 +4,6 @@
   <Project Path="SenacGames.Desktop/SenacGames.Desktop.csproj" />
   <Project Path="SenacGames.Domain/SenacGames.Domain.csproj" />
   <Project Path="SenacGames.Infrastructure/SenacGames.Infrastructure.csproj" />
+  <Project Path="SenacGames.Test/SenacGames.Test.csproj" />
   <Project Path="SenacGames.UI/SenacGames.UI.csproj" />
 </Solution>
